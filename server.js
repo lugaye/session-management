@@ -34,6 +34,15 @@ app.use(
     })
 );
 
+//protected routes function
+const isAuthenticated = (request, response, next) => {
+    if(request.session.user){
+        return next();
+    } else {
+        response.send('You have not logged in!');
+    }
+}
+
 //set-up routes
 app.get('/', (request, response) => {
     
@@ -42,9 +51,19 @@ app.get('/', (request, response) => {
         response.send(`<p>Current views: ${request.session.views}</p>`);
     } else {
         request.session.views = 1;
-        request.session.user = { name: 'Eddy', email: 'eddy@mail.com', country : 'Kenya' }
+        
         response.send('Welcome to basic session management.');
     }
+});
+
+app.get('/login', (request, response) => {
+    request.session.user = { name: 'Eddy', email: 'eddy@mail.com', country : 'Kenya' }
+    response.send('Successfully logged in')
+});
+
+
+app.get('/profile', isAuthenticated, (request, response) => {
+    response.send('Welcome to your profile');
 });
 
 
@@ -65,6 +84,8 @@ app.get('/destroy', (request, response) => {
         }
     });
 });
+
+
 
 
 
